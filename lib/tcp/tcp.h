@@ -7,8 +7,9 @@
 namespace kystreich::http {
 	class TcpServer {
 		private:
-			std::unique_ptr<PlatformSocket> sock_;
-		
+			std::unique_ptr<psocket::PlatformSocket> sock_;
+			uint16_t maxConns_;
+
 		public:
 			TcpServer();
 			~TcpServer()=default;
