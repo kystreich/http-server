@@ -16,6 +16,6 @@ Small portable & multithreaded HTTP server in C++.
 
 [The Bible, Beej's Guide to Network Programming](https://beej.us/guide/bgnet/)
 
-[C++ Patters](https://cpppatterns.com/)
+[C++ Patterns - Joseph Mansfield](https://cpppatterns.com/)
 
-[C/C++ By Example](https://www.cbyexample.com/)
+[C/C++ By Example - Sean Valeo](https://www.cbyexample.com/)
