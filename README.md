@@ -14,7 +14,7 @@ Small portable & multithreaded HTTP server in C++.
 ## Cool Resources
 [The World Of Select - Spencer Low](https://www.lowtek.com/sockets/select.html)
 
-[The Bible, Beej's Guide to Network Programming](https://beej.us/guide/bgnet/)
+[The Bible, Beej's Guide to Network Programming - Brian Hall](https://beej.us/guide/bgnet/)
 
 [C++ Patterns - Joseph Mansfield](https://cpppatterns.com/)
 
