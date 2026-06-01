@@ -7,29 +7,27 @@
 #include "../threading/threadPool.h"
 #include "../socket/socket.h"
 
+#ifdef DELETE
+#undef DELETE // windows 
+#endif
+
 namespace kystreich::http {
 
 	using Headers = std::unordered_map<std::string, std::string>;
 
 	enum class HttpMethod {
-		_GET,
-		_HEAD,
-		_POST,
-		_PUT,
-		_DELETE, // delete is a reserved word, can't think of a better workaround.
-		_CONNECT,
-		_OPTIONS,
-		_TRACE,
-		_PATCH 
-	};
-
-	enum class Protocol {
-		HTTP,
-		HTTPS
-	};
+		GET,
+		HEAD,
+		POST,
+		PUT,
+		DELETE,
+		CONNECT,
+		OPTIONS,
+		TRACE,
+		PATCH 
+	};	
 
 	struct URI {
-		Protocol protocol;
 		std::string address;
 		std::string path;
 		std::string params;
@@ -44,10 +42,12 @@ namespace kystreich::http {
 		std::string body;
 	};
 
+	using HandlerFunction = std::function<void(HttpMessage, HttpMessage)>;
+
 	struct RouteHandler {
 		HttpMethod method;
 		std::string path;
-		std::function<void(HttpMessage, HttpMessage)> handler;
+		HandlerFunction handler;
 	};
 
 	class HttpServer {
@@ -55,6 +55,9 @@ namespace kystreich::http {
 			std::unique_ptr<psocket::PlatformSocket> sock_;
 			std::uint16_t maxConns_;
 			threading::ThreadPool threadPool_;
+			std::unordered_map<std::string, RouteHandler> routes_;
+
+			[[nodiscard]] RouteHandler resolveRoute(HttpMessage req) const; 
 
 		public:
 			HttpServer();
