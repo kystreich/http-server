@@ -1,6 +1,7 @@
 #pragma once
 
 #include <cstdint>
+#include <filesystem>
 #include <functional>
 #include <memory>
 #include <unordered_map>
@@ -13,7 +14,8 @@
 
 namespace kystreich::http {
 
-	using Headers = std::unordered_map<std::string, std::string>;
+	using StandardMap = std::unordered_map<std::string, std::string>;
+	using Headers = StandardMap;
 
 	enum class HttpMethod {
 		GET,
@@ -31,33 +33,57 @@ namespace kystreich::http {
 		std::string address;
 		std::string path;
 		std::string params;
-	};
+	};	
 
-	struct HttpMessage {
-		HttpMethod method;
-		URI reqTarget;
+	struct HttpRequest {
+		HttpMethod  method;
+		URI         reqTarget;
 		std::int8_t version;
-		Headers headers;
-		Headers trailers;
+		Headers     headers;
+		Headers     trailers;
 		std::string body;
 	};
 
-	using HandlerFunction = std::function<void(HttpMessage, HttpMessage)>;
+	class HttpResponse {
+		private:
+			Headers     headers_;
+			Headers     trailers_;
+			int         status_;
+			std::string body_;
+		
+		public:
+			HttpResponse& status(int code);
+			HttpResponse& body(std::string body="");
+			HttpResponse& redirect(URI);
+			HttpResponse& json(StandardMap);
+
+			void          send();
+			void          sendFile(std::filesystem::path file);
+	};
+	
+	using HandlerFunction = std::function<void(HttpRequest, HttpResponse)>;
+
+	struct RouteParams {
+		StandardMap queryParams;
+		StandardMap bodyParams;
+	};
 
 	struct RouteHandler {
-		HttpMethod method;
-		std::string path;
+		HttpMethod      method;
+		std::string     path;
 		HandlerFunction handler;
+		RouteParams     params;
 	};
 
 	class HttpServer {
 		private:
-			std::unique_ptr<psocket::PlatformSocket> sock_;
-			std::uint16_t maxConns_;
-			threading::ThreadPool threadPool_;
+			std::unique_ptr<psocket::PlatformSocket>      sock_;
+			std::uint16_t                                 maxConns_;
+			threading::ThreadPool                         threadPool_;
 			std::unordered_map<std::string, RouteHandler> routes_;
 
-			[[nodiscard]] RouteHandler resolveRoute(HttpMessage req) const; 
+			[[nodiscard]] RouteHandler resolveRoute(HttpRequest req) const; 
+			void handleRequest();
 
 		public:
 			HttpServer();

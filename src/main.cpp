@@ -4,7 +4,7 @@
 using namespace kystreich::http;
 
 int main() {
-	psocket::PlatformSocket pSock = psocket::PlatformSocket(8080);
+	psocket::PlatformSocket pSock = psocket::PlatformSocket{8080, 10};
 
 	auto bindRes = pSock.bind();
 	auto listenRes = pSock.listen();
