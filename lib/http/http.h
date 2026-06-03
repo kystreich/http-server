@@ -1,5 +1,6 @@
 #pragma once
 
+#include <cstddef>
 #include <cstdint>
 #include <filesystem>
 #include <functional>
@@ -13,6 +14,8 @@
 #endif
 
 namespace kystreich::http {
+
+	constexpr std::size_t MAX_CONNS_DEFAULT = 10;
 
 	using StandardMap = std::unordered_map<std::string, std::string>;
 	using Headers = StandardMap;
@@ -78,21 +81,25 @@ namespace kystreich::http {
 	class HttpServer {
 		private:
 			std::unique_ptr<psocket::PlatformSocket>      sock_;
+			std::unique_ptr<threading::ThreadPool>        threadPool_;
 			std::uint16_t                                 maxConns_;
-			threading::ThreadPool                         threadPool_;
 			std::unordered_map<std::string, RouteHandler> routes_;
 
 			[[nodiscard]] RouteHandler resolveRoute(HttpRequest req) const; 
 			void handleRequest();
 
 		public:
-			HttpServer();
+			HttpServer(
+				std::uint16_t maxConns,
+				std::uint16_t port,
+				std::uint16_t backlog=MAX_CONNS_DEFAULT,
+				std::size_t maxThreads=threading::MAX_THREADS_DEFAULT
+			);
 			~HttpServer()=default;
 			HttpServer(const HttpServer&)=delete;
-			HttpServer(const HttpServer&& other) noexcept;
+			HttpServer(HttpServer&& other) noexcept;
 			HttpServer& operator=(const HttpServer&)=delete;
 			HttpServer& operator=(HttpServer&& other) noexcept;
-
 
 			void route(RouteHandler route);
 			void listen(uint16_t port);

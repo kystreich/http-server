@@ -1,9 +1,11 @@
-#include "./lib/socket/socket.h"
 #include <iostream>
+#include "./lib/socket/socket.h"
+#include "lib/threading/threadPool.h"
 
 using namespace kystreich::http;
 
 int main() {
+	threading::ThreadPool tPool = threading::ThreadPool{};
 	psocket::PlatformSocket pSock = psocket::PlatformSocket{8080, 10};
 
 	auto bindRes = pSock.bind();
@@ -11,10 +13,7 @@ int main() {
 
 	while (true) {
 		auto client = pSock.accept();
-		std::cout << "Client (" << client << ") connected.\n";
-		const char* msg = "Hi from http server\n\0";
-		send(client, msg, strlen(msg), 0);
-		closesocket(client);
+		tPool.enqueueClient(client);
 	}
 		
 	auto error = psocket::getLastWsaErr();

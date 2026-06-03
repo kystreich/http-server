@@ -1,9 +1,9 @@
 #include <cstdint>
+#include <iostream>
 #include <cstring>
 #include <format>
-#include <assert.h>
+#include <cassert>
 #include <unistd.h>
-#include <winsock2.h>
 #include "platform.h"
 #include "socket.h"
 
@@ -56,15 +56,27 @@ namespace kystreich::http::psocket {
 	}
 	#endif
 
+	socket_p PlatformSocket::createSock_() {
+		#if IS_WINDOWS
+		initWinsock();
+		#endif
+		
+		auto sock = socket(AF_INET, SOCK_STREAM, 0);
+
+		if (sock == P_INVALID_SOCKET) {
+			auto wsaErrCode = WSAGetLastError();
+			std::cout << std::format("{} | {}\n", sock, wsaErrCode);
+			throw std::runtime_error("Failed to initialize socket");
+		}
+
+		return sock;
+	};
+
 	PlatformSocket::PlatformSocket(const std::uint16_t port, const std::uint16_t backlog)
 	: backlog_(backlog)
 	, sockAddr_{}
-	, rawSock_{socket(AF_INET, SOCK_STREAM, 0)}
+	, rawSock_(createSock_())
 	{
-		#if IS_WINDOWS 
-		initWinsock();
-		#endif
-
 		addrinfo hints{};
 		memset(&hints, 0, sizeof(hints));
 
@@ -72,10 +84,7 @@ namespace kystreich::http::psocket {
 		hints.ai_socktype = SOCK_STREAM;
 		hints.ai_flags = AI_PASSIVE;
 
-
-		if (rawSock_ == P_INVALID_SOCKET) {
-			throw std::runtime_error("Failed to initialize socket");
-		}
+		setsockopt(rawSock_, SOL_SOCKET, SO_REUSEADDR, "1", sizeof("1"));
 
 		sockaddr_in sockAddr{};
 		sockAddr.sin_family = AF_INET;
@@ -97,7 +106,7 @@ namespace kystreich::http::psocket {
 	}
 
 	bool PlatformSocket::listen() {
-		return ::listen(rawSock_, backlog_);
+		return ::listen(rawSock_, 5);
 	}
 
 	socket_p PlatformSocket::accept() {
