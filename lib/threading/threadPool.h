@@ -1,8 +1,6 @@
 #pragma once
 
 #include <condition_variable>
-#include <functional>
-#include <optional>
 #include <queue>
 #include <thread>
 #include "lib/socket/platform.h"

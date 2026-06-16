@@ -14,9 +14,9 @@ namespace kystreich::http::psocket {
 			sockaddr_in   sockAddr_;
 			std::uint16_t backlog_;
 
-			static socket_p createSock_();
+			static socket_p createSock();
 		public:
-			PlatformSocket(const std::uint16_t port, const std::uint16_t backlog);
+			PlatformSocket(std::uint16_t port, std::uint16_t backlog);
 			~PlatformSocket();
 			PlatformSocket(const PlatformSocket&)=delete;
 			PlatformSocket(PlatformSocket&& other)=default;

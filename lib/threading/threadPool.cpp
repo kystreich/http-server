@@ -1,14 +1,11 @@
-#include <chrono>
 #include <format>
 #include <mutex>
-#include <optional>
 #include <iostream>
 #include <queue>
 #include "threadPool.h"
 #include "lib/socket/platform.h"
 
 namespace kystreich::http::threading {
-
 	ThreadPool::ThreadPool(size_t maxThreads)
 	: maxThreads_(maxThreads)
 	, connQueue_()
@@ -42,7 +39,6 @@ namespace kystreich::http::threading {
 									connQueue_.pop();
 								}
 
-
 							}
 
 							if (conn != INVALID_SOCKET) {
@@ -51,9 +47,7 @@ namespace kystreich::http::threading {
 
 							    	const char* msg = "HTTP/1.1 204 No Content\r\n\r\n";
 							    	send(conn, msg, static_cast<int>(strlen(msg)), 0);
-							    	shutdown(conn, 1);
-								closesocket(conn);
-							}	
+							}
 						}
 					}
 			);

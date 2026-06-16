@@ -1,35 +1,94 @@
 ---
-Checks:          'clang-diagnostic-*,clang-analyzer-*,cppcoreguidelines-*,modernize-*,-modernize-use-trailing-return-type'
-WarningsAsErrors: true
-HeaderFilterRegex: ''
-FormatStyle:     llvm
+Checks: >
+  clang-diagnostic-*,
+  clang-analyzer-*,
+  cppcoreguidelines-*,
+  modernize-*,
+  readability-*,
+  performance-*,
+  bugprone-*,
+  misc-*,
+  hicpp-*,
+  concurrency-*,
+  portability-*,
+  -modernize-use-trailing-return-type,
+  -readability-braces-around-statements,
+  -hicpp-braces-around-statements,
+  -google-readability-braces-around-statements
+WarningsAsErrors: '*'
+HeaderFilterRegex: '.*'
+FormatStyle: google
 CheckOptions:
-  - key:             cert-dcl16-c.NewSuffixes
-    value:           'L;LL;LU;LLU'
-  - key:             cert-oop54-cpp.WarnOnlyIfThisHasSuspiciousField
-    value:           '0'
-  - key:             cppcoreguidelines-explicit-virtual-functions.IgnoreDestructors
-    value:           '1'
-  - key:             cppcoreguidelines-non-private-member-variables-in-classes.IgnoreClassesWithAllMemberVariablesBeingPublic
-    value:           '1'
-  - key:             google-readability-braces-around-statements.ShortStatementLines
-    value:           '1'
-  - key:             google-readability-function-size.StatementThreshold
-    value:           '800'
-  - key:             google-readability-namespace-comments.ShortNamespaceLines
-    value:           '10'
-  - key:             google-readability-namespace-comments.SpacesBeforeComments
-    value:           '2'
-  - key:             modernize-loop-convert.MaxCopySize
-    value:           '16'
-  - key:             modernize-loop-convert.MinConfidence
-    value:           reasonable
-  - key:             modernize-loop-convert.NamingStyle
-    value:           CamelCase
-  - key:             modernize-pass-by-value.IncludeStyle
-    value:           llvm
-  - key:             modernize-replace-auto-ptr.IncludeStyle
-    value:           llvm
-  - key:             modernize-use-nullptr.NullMacros
-    value:           'NULL'
+  - key:   cert-dcl16-c.NewSuffixes
+    value: 'L;LL;LU;LLU'
+  - key:   cppcoreguidelines-explicit-virtual-functions.IgnoreDestructors
+    value: '0'
+  - key:   cppcoreguidelines-non-private-member-variables-in-classes.IgnoreClassesWithAllMemberVariablesBeingPublic
+    value: '0'
+  - key:   cppcoreguidelines-avoid-magic-numbers.IgnoredIntegerValues
+    value: '0;1;2'
+  - key:   cppcoreguidelines-avoid-magic-numbers.IgnoredFloatingPointValues
+    value: '0.0;1.0'
+  - key:   modernize-loop-convert.MaxCopySize
+    value: '0'
+  - key:   modernize-loop-convert.MinConfidence
+    value: safe
+  - key:   modernize-loop-convert.NamingStyle
+    value: CamelCase
+  - key:   modernize-pass-by-value.IncludeStyle
+    value: google
+  - key:   modernize-use-nullptr.NullMacros
+    value: 'NULL'
+  - key:   modernize-use-default-member-init.UseAssignment
+    value: '0'
+  - key:   modernize-use-emplace.ContainersWithPushBack
+    value: '::std::vector;::std::deque;::std::list'
+  - key:   modernize-use-emplace.SmartPointers
+    value: '::std::shared_ptr;::std::unique_ptr;::std::weak_ptr'
+  - key:   modernize-use-std-print.PrintfLikeFunctions
+    value: 'printf;fprintf'
+  - key:   readability-identifier-naming.NamespaceCase
+    value: lower_case
+  - key:   readability-identifier-naming.ClassCase
+    value: CamelCase
+  - key:   readability-identifier-naming.StructCase
+    value: CamelCase
+  - key:   readability-identifier-naming.FunctionCase
+    value: camelBack
+  - key:   readability-identifier-naming.VariableCase
+    value: camelBack
+  - key:   readability-identifier-naming.ConstantCase
+    value: UPPER_CASE
+  - key:   readability-identifier-naming.EnumCase
+    value: CamelCase
+  - key:   readability-identifier-naming.EnumConstantCase
+    value: UPPER_CASE
+  - key:   readability-identifier-naming.MemberCase
+    value: camelBack
+  - key:   readability-identifier-naming.PrivateMemberSuffix
+    value: '_'
+  - key:   readability-identifier-naming.TemplateParameterCase
+    value: CamelCase
+  - key:   readability-magic-numbers.IgnoredIntegerValues
+    value: '0;1;2'
+  - key:   readability-magic-numbers.IgnoredFloatingPointValues
+    value: '0.0;1.0'
+  - key:   readability-function-cognitive-complexity.Threshold
+    value: '25'
+  - key:   readability-function-size.LineThreshold
+    value: '60'
+  - key:   readability-function-size.StatementThreshold
+    value: '30'
+  - key:   readability-function-size.BranchThreshold
+    value: '7'
+  - key:   readability-function-size.ParameterThreshold
+    value: '5'
+  - key:   performance-move-const-arg.CheckTriviallyCopyableMove
+    value: '1'
+  - key:   bugprone-argument-comment.StrictMode
+    value: '1'
+  - key:   bugprone-easily-swappable-parameters.MinimumLength
+    value: '2'
+  - key:   misc-non-private-member-variables-in-classes.IgnoreClassesWithAllMemberVariablesBeingPublic
+    value: '0'
 ...
