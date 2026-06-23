@@ -1,10 +1,13 @@
 #include "utils.h"
+#include "psocket.h"
 #include <array>
 #include <format>
 
 const int MSG_BUF_SIZE = 256;
 
 std::string resolveWsaErr() {
+
+#ifdef PSOCKET_WIN
   std::array<char, MSG_BUF_SIZE> errMsgBuf{};
   errMsgBuf[MSG_BUF_SIZE - 1] = '\0';
 
@@ -20,4 +23,7 @@ std::string resolveWsaErr() {
   }
 
   return std::string{errMsgBuf.data()};
+
+#endif
+  return std::string{"Unsupported"};
 }

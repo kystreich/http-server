@@ -1,11 +1,13 @@
 #pragma once
 
 #include <cstdint>
+#include <optional>
+#include <string_view>
 
 #if defined(_WIN32) || defined(__MINGW32__)
-#define PSOCKET_WIN 1
+#define PSOCKET_WIN
 #else
-#define PSOCKET_POSIX 1
+#define PSOCKET_POSIX
 #endif
 
 #ifdef PSOCKET_WIN
@@ -14,6 +16,7 @@
 #include <ws2tcpip.h>
 
 using psocket_t = SOCKET;
+
 #endif
 
 #ifdef PSOCKET_POSIX
@@ -21,11 +24,13 @@ using psocket_t = SOCKET;
 #include <netdb.h>
 #include <sys/socket.h>
 #include <sys/types.h>
+#include <unistd.h>
 
 using psocket_t = int;
 #endif
 
-using sa_family_t = std::uint8_t;
+void psocketInit();
+void psocketCleanup();
 
 const int ADDR_DATA_LEN = 14;
 const int ADDRESS_LENGTH_V6 = 16;
@@ -49,9 +54,6 @@ enum class PSocketProtocol : std::uint8_t {
   RAW = 3,
 };
 
-void psocketInit();
-void psocketCleanup();
-
 psocket_t psocket(PSocketDomain domain, PSocketType type,
                   PSocketProtocol proto);
 
@@ -59,17 +61,23 @@ psocket_t psocket(int domain, int type, int proto);
 
 psocket_t pbind(psocket_t socket, sockaddr *addr, socklen_t addrlen);
 
-psocket_t plisten(psocket_t socket);
-psocket_t pconnect(psocket_t socket);
-psocket_t paccept(psocket_t socket);
+psocket_t plisten(psocket_t socket, int backlog);
+
+psocket_t pconnect(psocket_t socket, sockaddr *addr, socklen_t addrlen);
+
+psocket_t paccept(psocket_t socket, std::optional<sockaddr> addr,
+                  std::optional<socklen_t> addrlen);
+
+void psclose(psocket_t socket);
+
+psocket_t psetopt(psocket_t socket, int level, int optionName,
+                  const void *optionValue, socklen_t optionLen);
+
+psocket_t psend(psocket_t socket, const std::string &buffer, int flags = 0);
 
 template <typename T>
 psocket_t preceive(psocket_t socket, T *buffer, std::uint32_t flags,
-                   size_t size = sizeof(T));
-
-template <typename T>
-psocket_t psend(psocket_t socket, T *buffer, std::uint32_t flags,
-                size_t size = sizeof(T));
+                   size_t size);
 
 class PSocketBuilder {
 public:

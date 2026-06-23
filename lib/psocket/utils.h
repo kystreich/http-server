@@ -1,4 +1,4 @@
-#include "psocket.h"
+#pragma once
 #include <string>
 
 std::string resolveWsaErr();

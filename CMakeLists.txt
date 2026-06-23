@@ -12,19 +12,17 @@ set (CMAKE_CXX_STANDARD_REQUIRED on)
 set (CMAKE_CXX_EXTENSIONS off)
 set (CMAKE_CXX_USE_RESPONSE_FILE_FOR_INCLUDES OFF)
 
-# You probably dont need this
-set (OPENSSL_ROOT_DIR "C:/msys64/ucrt64/")
-find_package(OpenSSL REQUIRED)
-
 set (SOURCES
 src/main.cpp
 lib/psocket/psocket.cpp
+lib/psocket/utils.cpp
 #lib/socket/socket.cpp
 #lib/threading/threadpool.cpp
 )
 
 set (HEADERS
 lib/psocket/psocket.h
+lib/psocket/utils.h
 #lib/socket/platform.h
 #lib/socket/socket.h
 #lib/threading/threadpool.h
@@ -32,11 +30,21 @@ lib/psocket/psocket.h
 
 add_executable(HttpServer ${SOURCES})
 
+if(WIN32)
+	set (OPTIONAL_INCLUDE
+		ws2_32
+	)
+
+	set (OPENSSL_ROOT_DIR "C:/msys64/ucrt64/")
+endif (WIN32)
+
+find_package(OpenSSL REQUIRED)
+
 target_link_libraries(HttpServer
 	PRIVATE
 	OpenSSL::SSL
 	OpenSSL::Crypto
-	ws2_32
+	${OPTIONAL_INCLUDE}
 )
 
 target_include_directories(HttpServer PRIVATE
