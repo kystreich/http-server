@@ -1,22 +1,14 @@
+#include "lib/psocket/psocket.h"
 #include <iostream>
-#include "./lib/socket/socket.h"
-#include "lib/threading/threadPool.h"
-
-using namespace kystreich::http;
 
 int main() {
-	threading::ThreadPool tPool = threading::ThreadPool{};
-	psocket::PlatformSocket pSock = psocket::PlatformSocket{8080, 10};
+  psocketInit();
+  auto psock =
+      psocket(PSocketDomain::IPV4, PSocketType::TCP, PSocketProtocol::ANY);
 
-	auto bindRes = pSock.bind();
-	auto listenRes = pSock.listen();
+  std::cout << std::format("Is invalid: {}", psock == INVALID_SOCKET) << "\n";
+  std::cout << psock << "\n";
+  std::cout << resolveWsaErr() << "\n";
 
-	while (true) {
-		auto client = pSock.accept();
-		tPool.enqueueClient(client);
-	}
-		
-	auto error = psocket::getLastWsaErr();
-
-	std::cout << error << "\n";
+  psocketCleanup();
 }

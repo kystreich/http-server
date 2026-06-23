@@ -1,11 +1,13 @@
 #pragma once
 
+#include <array>
 #include <cstdint>
+#include <string>
 
 #if defined(_WIN32) || defined(__MINGW32__)
-#define PSOCKET_WIN
+#define PSOCKET_WIN 1
 #else
-#define PSOCKET_POSIX
+#define PSOCKET_POSIX 1
 #endif
 
 #ifdef PSOCKET_WIN
@@ -24,22 +26,60 @@ using psocket_t = SOCKET;
 using psocket_t = int;
 #endif
 
-enum class PSocketTypes : std::uint8_t {
-  TCP,
-  TCP_IPV4,
-  TCP_IPV6,
+using sa_family_t = std::uint_least32_t;
 
-  UDP,
-  UDP_IPV4,
-  UDP_IPV6,
+const int ADDRESS_LENGTH_V4 = 14;
+const int ADDRESS_LENGTH_V6 = 16;
 
-  PACKET,
-  PACKET_IPV4,
-  PACKET_IPV6,
+enum class PSocketDomain : std::uint8_t {
+  ANY = AF_UNSPEC,
+  IPV4 = AF_INET,
+  IPV6 = AF_INET6,
 };
 
-psocket_t psocketInit();
-psocket_t psocketCleanup();
+enum class PSocketType : std::uint8_t {
+  TCP = SOCK_STREAM,
+  UDP = SOCK_DGRAM,
+  SOCKET = SOCK_RAW
+};
+
+enum class PSocketProtocol : std::uint8_t {
+  ANY = 0,
+  TCP = 6,
+  UDP = 17,
+  RAW = 3,
+};
+
+struct PSockAddr {
+  sa_family_t saFamily;
+  std::array<char, ADDRESS_LENGTH_V4> saData;
+};
+
+struct PSockAddrV4 {
+  sa_family_t family;
+  std::uint_least16_t port;
+  std::uint_least32_t addr;
+};
+
+struct V6Addr {
+  std::array<std::uint_least8_t, ADDRESS_LENGTH_V6> addr;
+};
+
+struct PSockAddrV6 {
+  sa_family_t family;
+  std::uint_least16_t port;
+  std::uint_least32_t flowinfo;
+  V6Addr addr;
+  std::uint_least32_t scopeId;
+};
+
+std::string resolveWsaErr();
+
+void psocketInit();
+void psocketCleanup();
+
+psocket_t psocket(PSocketDomain domain, PSocketType type,
+                  PSocketProtocol proto);
 
 psocket_t pbind(psocket_t socket);
 psocket_t plisten(psocket_t socket);
@@ -49,6 +89,34 @@ psocket_t paccept(psocket_t socket);
 template <typename T>
 psocket_t preceive(psocket_t socket, T *buffer, std::uint32_t flags,
                    size_t size = sizeof(T));
+
 template <typename T>
 psocket_t psend(psocket_t socket, T *buffer, std::uint32_t flags,
-                size_t = sizeof(T));
+                size_t size = sizeof(T));
+
+psocket_t ppollCreate();
+psocket_t ppollCtl();
+psocket_t ppollWait();
+
+psocket_t pioringSetup();
+psocket_t pioringEnter();
+psocket_t pioringSubmit();
+
+class PSocketBuilder {
+public:
+  // NOTE: use static_assert to make sure invalid methods arent used (i.e
+  // calling tcp() after calling udp()) ?
+  PSocketBuilder &tcp();
+  PSocketBuilder &tcpv6();
+  PSocketBuilder &tcpv4();
+
+  PSocketBuilder &udp();
+  PSocketBuilder &udpv6();
+  PSocketBuilder &udpv4();
+
+  PSocketBuilder &raw();
+  PSocketBuilder &rawv6();
+  PSocketBuilder &rawv4();
+
+  psocket_t build();
+};

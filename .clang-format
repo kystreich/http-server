@@ -1,7 +1,7 @@
 ---
 Language:        Cpp
 Standard:        c++23
-BasedOnStyle:    LLVM
+BasedOnStyle:    Google
 BreakBeforeBraces: Allman
 IndentWidth:     4
 TabWidth:        4

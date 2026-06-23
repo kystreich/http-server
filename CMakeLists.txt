@@ -18,15 +18,16 @@ find_package(OpenSSL REQUIRED)
 
 set (SOURCES
 src/main.cpp
-lib/socket/socket.cpp
-lib/threading/threadpool.cpp
+lib/psocket/psocket.cpp
+#lib/socket/socket.cpp
+#lib/threading/threadpool.cpp
 )
 
 set (HEADERS
-lib/
-lib/socket/platform.h
-lib/socket/socket.h
-lib/threading/threadpool.h
+lib/psocket/psocket.h
+#lib/socket/platform.h
+#lib/socket/socket.h
+#lib/threading/threadpool.h
 )
 
 add_executable(HttpServer ${SOURCES})
