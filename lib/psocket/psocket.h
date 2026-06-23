@@ -1,8 +1,6 @@
 #pragma once
 
-#include <array>
 #include <cstdint>
-#include <string>
 
 #if defined(_WIN32) || defined(__MINGW32__)
 #define PSOCKET_WIN 1
@@ -51,8 +49,6 @@ enum class PSocketProtocol : std::uint8_t {
   RAW = 3,
 };
 
-std::string resolveWsaErr();
-
 void psocketInit();
 void psocketCleanup();
 
@@ -74,14 +70,6 @@ psocket_t preceive(psocket_t socket, T *buffer, std::uint32_t flags,
 template <typename T>
 psocket_t psend(psocket_t socket, T *buffer, std::uint32_t flags,
                 size_t size = sizeof(T));
-
-psocket_t ppollCreate();
-psocket_t ppollCtl();
-psocket_t ppollWait();
-
-psocket_t pioringSetup();
-psocket_t pioringEnter();
-psocket_t pioringSubmit();
 
 class PSocketBuilder {
 public:
