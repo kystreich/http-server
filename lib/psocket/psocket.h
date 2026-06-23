@@ -13,6 +13,7 @@
 #ifdef PSOCKET_WIN
 #define PSOCKET_INVALID_SOCKET INVALID_SOCKET
 #include <winsock2.h>
+#include <ws2tcpip.h>
 
 using psocket_t = SOCKET;
 #endif
@@ -26,9 +27,9 @@ using psocket_t = SOCKET;
 using psocket_t = int;
 #endif
 
-using sa_family_t = std::uint_least32_t;
+using sa_family_t = std::uint8_t;
 
-const int ADDRESS_LENGTH_V4 = 14;
+const int ADDR_DATA_LEN = 14;
 const int ADDRESS_LENGTH_V6 = 16;
 
 enum class PSocketDomain : std::uint8_t {
@@ -50,29 +51,6 @@ enum class PSocketProtocol : std::uint8_t {
   RAW = 3,
 };
 
-struct PSockAddr {
-  sa_family_t saFamily;
-  std::array<char, ADDRESS_LENGTH_V4> saData;
-};
-
-struct PSockAddrV4 {
-  sa_family_t family;
-  std::uint_least16_t port;
-  std::uint_least32_t addr;
-};
-
-struct V6Addr {
-  std::array<std::uint_least8_t, ADDRESS_LENGTH_V6> addr;
-};
-
-struct PSockAddrV6 {
-  sa_family_t family;
-  std::uint_least16_t port;
-  std::uint_least32_t flowinfo;
-  V6Addr addr;
-  std::uint_least32_t scopeId;
-};
-
 std::string resolveWsaErr();
 
 void psocketInit();
@@ -81,7 +59,10 @@ void psocketCleanup();
 psocket_t psocket(PSocketDomain domain, PSocketType type,
                   PSocketProtocol proto);
 
-psocket_t pbind(psocket_t socket);
+psocket_t psocket(int domain, int type, int proto);
+
+psocket_t pbind(psocket_t socket, sockaddr *addr, socklen_t addrlen);
+
 psocket_t plisten(psocket_t socket);
 psocket_t pconnect(psocket_t socket);
 psocket_t paccept(psocket_t socket);

@@ -47,3 +47,11 @@ psocket_t psocket(PSocketDomain domain, PSocketType type,
   return socket(std::to_underlying(domain), std::to_underlying(type),
                 std::to_underlying(proto));
 }
+
+psocket_t psocket(int domain, int type, int proto) {
+  return socket(domain, type, proto);
+}
+
+psocket_t pbind(psocket_t socket, sockaddr *addr, socklen_t addrlen) {
+  return bind(socket, addr, addrlen);
+}
